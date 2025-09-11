@@ -1,23 +1,9 @@
 import { build } from "esbuild";
-import {
-  rmSync,
-  existsSync,
-  cpSync,
-  lstatSync,
-  readlinkSync,
-  readdirSync,
-} from "fs";
-import { resolve, dirname } from "path";
+import { rmSync, existsSync, cpSync, readdirSync } from "fs";
+import { resolve } from "path";
 
 const builder = async () => {
-  let distPath = "./dist";
-
-  // If dist is a symlink, get the target directory
-  if (existsSync(distPath) && lstatSync(distPath).isSymbolicLink()) {
-    const linkTarget = readlinkSync(distPath);
-    // Resolve relative symlinks
-    distPath = resolve(dirname(distPath), linkTarget);
-  }
+  let distPath = "./vibekickstart/dist";
 
   // Clean the target directory contents, not the symlink itself
   if (existsSync(distPath)) {
@@ -39,7 +25,7 @@ const builder = async () => {
     minify: false,
     sourcemap: false,
     target: ["chrome58", "firefox57", "safari11", "edge16"],
-    outdir: "./dist",
+    outdir: "./vibekickstart/dist",
     define: {
       "process.env.NODE_ENV": JSON.stringify("development"),
       __DEV__: "true",
