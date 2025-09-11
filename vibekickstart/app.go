@@ -119,11 +119,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	if clientID == "" {
 		clientID = r.RemoteAddr
 	}
-	
-	logger.Info("New WebSocket connection", "client", clientID)
+
 	cm.Add("counter", conn)
 	defer cm.Remove("counter", conn)
-	
+
 	// Send current counter value to new client
 	currentCounter := getCounter()
 	welcomeMsg := CounterMessage{
@@ -136,7 +135,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, message, err := conn.Read(ctx)
 		if err != nil {
-			logger.Info("WebSocket connection closed", "client", clientID, "err", err)
 			return
 		}
 
@@ -184,7 +182,7 @@ func broadcastCounter() {
 		logger.Error("Failed to marshal counter message", "err", err)
 		return
 	}
-	
+
 	ctx := context.Background()
 	cm.BroadcastAll(ctx, data)
 }
@@ -192,7 +190,7 @@ func broadcastCounter() {
 func startCounterIncrement() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		incrementCounter()
 	}
