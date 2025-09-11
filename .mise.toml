@@ -1,0 +1,46 @@
+[tools]
+golang = "1.24"
+golangci-lint = "2.0.2"
+shellcheck = "0.9.0"
+nodejs = "22.14.0"
+shfmt = "3.7.0"
+vale = "3.3.0"
+watchexec = "latest"
+
+[tasks.lint]
+depends = ['eslint', 'prettier', 'golangci-lint']
+
+[tasks.eslint]
+dir = "src"
+run = "npx eslint ."
+
+[tasks.golangci-lint]
+dir = "vibekickstart"
+run = "golangci-lint run ./..."
+
+[tasks.prettier]
+dir = "src"
+run = "npx prettier . --write"
+
+[tasks.build]
+depends = ['build-assets']
+env = { CGO_ENABLED = '0', GOOS = 'linux', GOARCH = 'arm64' }
+dir = "vibekickstart"
+run = "go build -ldflags '-w' -o vibekickstart"
+
+[tasks.build-assets]
+hide = true
+run = "npm run build"
+
+[tasks.run]
+depends = ['build-assets']
+sources =[
+  'vibekickstart/**/*.{tmpl,go}',
+  'src/**/*',
+  'package-lock.json',
+]
+dir = "vibekickstart"
+run = "go run ."
+
+[tasks.watch]
+run = "mise watch -r run"

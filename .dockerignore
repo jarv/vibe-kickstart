@@ -1,0 +1,31 @@
+# Build artifacts
+dist/
+vibekickstart/vibekickstart
+node_modules/
+
+# Development files
+.git/
+.github/
+.mise.toml
+.gitignore
+.claude/
+
+# Documentation
+README.md
+CLAUDE.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
