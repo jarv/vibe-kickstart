@@ -10,6 +10,18 @@ watchexec = "latest"
 [tasks.lint]
 depends = ['eslint', 'prettier', 'golangci-lint']
 
+[tasks.test]
+depends = ['build-assets']
+run = "npm test"
+
+[tasks.test-headed]
+depends = ['build-assets']
+run = "npm run test:headed"
+
+[tasks.test-ui]
+depends = ['build-assets']
+run = "npm run test:ui"
+
 [tasks.eslint]
 dir = "src"
 run = "npx eslint ."
