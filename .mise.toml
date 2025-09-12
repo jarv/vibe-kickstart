@@ -1,7 +1,7 @@
 [tools]
 golang = "1.24"
 golangci-lint = "2.0.2"
-shellcheck = "0.9.0"
+shellcheck = "0.11.0"
 nodejs = "22.14.0"
 shfmt = "3.7.0"
 vale = "3.3.0"
