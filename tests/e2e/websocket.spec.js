@@ -9,10 +9,9 @@ test.describe("WebSocket Connection Tests", () => {
     const ws = await wsPromise;
 
     // Verify WebSocket URL is correct
-    expect(ws.url()).toMatch(/ws:\/\/localhost:8750\/ws/);
+    expect(ws.url()).toMatch(/ws:\/\/localhost:8910\/ws/);
 
     // Verify WebSocket is not closed
     expect(ws.isClosed()).toBeFalsy();
   });
 });
-

@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	addr      = flag.String("addr", "localhost:8750", "http service address")
+	addr      = flag.String("addr", "localhost:8910", "http service address")
 	jsonLog   = flag.Bool("json", false, "use json logs")
 	templates = template.Must(template.ParseFS(tmplFiles, "tmpl/*.tmpl"))
 	cacheBust = time.Now().Format("20060102150405")

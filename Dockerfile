@@ -21,6 +21,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags='-w -s -extldflags "
 # Final stage - scratch for minimal image
 FROM scratch
 COPY --from=go-builder /app/vibekickstart /vibekickstart
-EXPOSE 8750
+EXPOSE 8910
 ENTRYPOINT ["/vibekickstart"]
-CMD ["-addr", "0.0.0.0:8750"]
+CMD ["-addr", "0.0.0.0:8910"]

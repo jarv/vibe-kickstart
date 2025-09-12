@@ -28,7 +28,7 @@ mise run watch
 
 ```
 
-Visit <http://localhost:8750>
+Visit <http://localhost:8910>
 
 ### Production
 
@@ -47,10 +47,10 @@ mise run build
 docker build -t vibekickstart .
 
 # Run container
-docker run -p 8750:8750 vibekickstart
+docker run -p 8910:8910 vibekickstart
 
 # Or run in background
-docker run -d -p 8750:8750 --name vibekickstart vibekickstart
+docker run -d -p 8910:8910 --name vibekickstart vibekickstart
 ```
 
 ## Demo Feature
