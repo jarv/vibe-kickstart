@@ -1,46 +1,47 @@
 # VibeKickstart
 
-A template project for "vibe coding" - an opinionated starting point for a a hybrid web application that serves as a starting point for rapid prototyping and experimentation
+A template project for my personal "vibe coding"
+
+**[view the demo](https://vk.jarv.org)**
 
 ## Features
 
-- **Go Backend** - Fast HTTP server with WebSocket support for real-time communication
-- **JavaScript Frontend** - Modern ES6 modules with automatic reconnection
-- **Live Reload** - Watch mode for automatic rebuilding during development
-- **Real-time Counter** - Demo WebSocket feature with synchronized counter across all connected clients
+- **Go Backend** - Fast HTTP server with WebSocket support
+- **JavaScript Frontend** - Modern ES6 modules (plain JS, no typescript) with esbuild
+- **Single binary** - compiles everything into a **single, self-contained binary** with no external dependencies
+
+## Why a kickstart template?
+
+I found myself starting with the same project scaffolding for multiple projects, a Go backend with frontend assets compiled into a single binary.
+This kickstart template gives you just that, and not much more.
+Most of the time I am using Websockets so this includes minimal Websocket support.
+
+## Projects that started with this template
+
+_If you use this and have a project to add, please feel free to send an MR_
+
+- [stardewar.com](https://stardewar.com)
+- [flyemoji.com](https://flyemoji.com)
+
+## Dependencies
+
+There aren't many dependencies for this project but those that are required are updated automatically with [Renovate](https://github.com/renovatebot/renovate).
+Everything here should have latest versions.
+
+## Testing
+
+To ensure that nothing is broken for when dependencies are updated, there is a [playwrite](https://github.com/microsoft/playwright) integration test that is run on every change that ensures that the root page loads and that we can send and receive messages using the backend.
 
 ## Quick Start
 
-### Prerequisites
+### Compile and run local
 
-- [mise](https://mise.jdx.dev/) (recommended) or:
-  - Go 1.24+
-  - Node.js 22+
+1. Install [mise](https://mise.jdx.dev/)
+2. `mise install`
+3. `mise run watch`
+4. Visit <http://localhost:8910>
 
-### Development
-
-```bash
-# Install dependencies
-mise install
-
-# Start development server with watch mode
-mise run watch
-
-```
-
-Visit <http://localhost:8910>
-
-### Production
-
-```bash
-# Build production assets and binary
-mise run build
-
-# Run the binary
-./vibekickstart/vibekickstart
-```
-
-### Docker
+### Run with Docker
 
 ```bash
 # Build Docker image
@@ -53,30 +54,14 @@ docker run -p 8910:8910 vibekickstart
 docker run -d -p 8910:8910 --name vibekickstart vibekickstart
 ```
 
-## Demo Feature
-
-The application includes a simple WebSocket counter demonstration:
+## Demo site
 
 - A button is displayed in the center of the screen
 - The button shows a count that increments over time
 - When any user clicks the button, it broadcasts a reset to all connected clients
 - All clients see the counter reset in real-time
 
-This demonstrates the real-time synchronization capabilities perfect for collaborative applications, games, or live updates.
-
 ## Architecture
-
-### Single Binary Deployment
-
-VibeKickstart compiles everything into a **single, self-contained binary** with no external dependencies:
-
-- **Static Assets Embedded**: All CSS, JavaScript, and other assets are embedded using Go's `//go:embed` directive
-- **Templates Embedded**: HTML templates are compiled directly into the binary
-- **Zero Dependencies**: The final Docker image uses `scratch` as the base, containing only the binary
-- **Tiny Footprint**: Final Docker image is typically under 20MB
-- **Static Linking**: Binary is statically linked with no libc dependencies
-
-This approach means you can deploy the application anywhere that can run a Linux binary - no runtime dependencies, no external files, just copy and run.
 
 ### Backend (Go)
 
@@ -88,39 +73,30 @@ This approach means you can deploy the application anywhere that can run a Linux
 
 ### Frontend (JavaScript)
 
-- ReconnectingWebSocket for automatic reconnection
+- ReconnectingWebSocket for automatic websocket reconnection
 - ES6 modules bundled with esbuild
 - Modern browser targets (Chrome 58+, Firefox 57+, Safari 11+, Edge 16+)
 - Assets embedded in Go binary at build time
 
-### Build System
+### Deployment
 
-- **Multi-stage Docker build**: JavaScript assets built first, then embedded in Go binary
-- **esbuild**: Fast JavaScript bundling and minification
-- **mise**: Task management and tool versions for local development
-- **Static compilation**: `CGO_ENABLED=0` ensures no C dependencies
+The app can be deployed as a Docker container or as a single binary on a VM.
 
-## Development Commands
+## Development
+
+### Vibe Coding
+
+- The entry point is `src/main.js` for the frontend JS code.
+- For the server, routes are defined in `app.go`.
+- If you require assets (images, etc) place them in `public/`.
+
+### Commands
 
 - `mise run watch` - Watch for changes and rebuild automatically
 - `mise run run` - Build assets and run server once
 - `mise run build` - Build production assets and Go binary
 - `mise run lint` - Run linting and formatting
-- `npm run build` - Build JavaScript assets only
-
-## Project Structure
-
-```
-├── vibekickstart/          # Go backend
-│   ├── app.go             # Main HTTP server
-│   ├── wsconn.go          # WebSocket connection manager
-│   ├── multiline.go       # Custom log formatting
-│   └── tmpl/              # HTML templates
-├── src/                   # JavaScript frontend
-│   └── main.js           # Entry point
-├── public/               # Static assets (CSS, images, etc.)
-└── dist/                # Built assets (generated)
-```
+- `mise run test` - Run integration tests
 
 ## License
 
