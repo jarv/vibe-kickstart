@@ -11,6 +11,7 @@ node_modules
 *.local
 
 # Build output
+vibekickstart/vibekickstart
 vibekickstart/dist/**
 !vibekickstart/dist/.gitkeep
 

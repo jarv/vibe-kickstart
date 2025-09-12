@@ -56,3 +56,18 @@ run = "go run ."
 
 [tasks.watch]
 run = "mise watch -r run"
+
+[tasks.deploy]
+depends = ['build']
+run = """
+#!/usr/bin/env bash
+
+set -xeuf -o pipefail
+
+HOST="i.jarv.org"
+
+ssh root@$HOST "systemctl stop vibekickstart.service"
+scp -C vibekickstart/vibekickstart root@$HOST:/opt/vibekickstart/vibekickstart
+ssh root@$HOST "systemctl start vibekickstart.service"
+rm -f vibekickstart/vibekickstart
+"""
