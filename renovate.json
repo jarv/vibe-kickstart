@@ -5,5 +5,8 @@
   ],
   "prCreation": "immediate",
   "automergeType": "pr",
+  "requiredStatusChecks": [
+    "integration-tests"
+  ],
   "automerge": true
 }
