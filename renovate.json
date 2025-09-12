@@ -3,10 +3,12 @@
   "extends": [
     "config:recommended"
   ],
+  "dependencyDashboard": false,
   "prCreation": "immediate",
+  "automerge": true,
   "automergeType": "pr",
   "requiredStatusChecks": [
     "integration-tests"
   ],
-  "automerge": true
+  "recreateWhen": "always"
 }
