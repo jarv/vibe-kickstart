@@ -1,6 +1,6 @@
 # VibeKickstart
 
-A template project for my personal "vibe coding"
+A template project for my personal "vibe coding" when I want to build a website with Go and JS.
 
 **[view the demo](https://vk.jarv.org)**
 
@@ -15,6 +15,13 @@ A template project for my personal "vibe coding"
 I found myself starting with the same project scaffolding for multiple projects, a Go backend with frontend assets compiled into a single binary.
 This kickstart template gives you just that, and not much more.
 Most of the time I am using Websockets so this includes minimal Websocket support.
+
+## Other stuff not included, but I often will add
+
+- For a database, I will typically use `sqlite3` with [sqlc](https://sqlc.dev/) generated code.
+- [TailwindCSS](https://tailwindcss.com/)
+- [AlpineJS](https://alpinejs.dev/)
+- [htmx](https://htmx.org/)
 
 ## Projects that started with this template
 
