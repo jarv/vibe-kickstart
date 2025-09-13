@@ -1,5 +1,5 @@
 [tools]
-golang = "1.24"
+golang = "1.25.1"
 golangci-lint = "2.0.2"
 shellcheck = "0.9.0"
 nodejs = "22.19.0"
