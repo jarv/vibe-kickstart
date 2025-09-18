@@ -36,8 +36,6 @@ var (
 	cm        *ConnectionManager
 	counter   int
 	counterMu sync.RWMutex
-
-	startTime = time.Now()
 )
 
 func setupLogging() {
@@ -112,9 +110,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		logger.Error("Failed to accept WebSocket connection", "err", err)
 		return
 	}
-	defer conn.CloseNow()
+	defer func() {
+		if err := conn.CloseNow(); err != nil {
+			logger.Error("Failed to close WebSocket connection", "err", err)
+		}
+	}()
 
-	ctx := context.Background()
 	clientID := r.Header.Get("X-Forwarded-For")
 	if clientID == "" {
 		clientID = r.RemoteAddr
@@ -130,10 +131,19 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		Counter: currentCounter,
 	}
 	welcomeData, _ := json.Marshal(welcomeMsg)
-	conn.Write(ctx, websocket.MessageText, welcomeData)
+
+	// Use timeout for initial write
+	writeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	if err := conn.Write(writeCtx, websocket.MessageText, welcomeData); err != nil {
+		logger.Error("Failed to send welcome message", "err", err)
+	}
+	cancel()
 
 	for {
-		_, message, err := conn.Read(ctx)
+		// Use a timeout context for reading (30 second timeout for reads)
+		readCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		_, message, err := conn.Read(readCtx)
+		cancel()
 		if err != nil {
 			return
 		}
@@ -183,8 +193,10 @@ func broadcastCounter() {
 		return
 	}
 
-	ctx := context.Background()
-	cm.BroadcastAll(ctx, data)
+	// Use timeout context for broadcasting (10 second timeout)
+	broadcastCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	cm.BroadcastAll(broadcastCtx, data)
 }
 
 func startCounterIncrement() {

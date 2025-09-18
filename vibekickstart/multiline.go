@@ -20,7 +20,9 @@ func (h *MultilineHandler) Enabled(_ context.Context, _ slog.Level) bool {
 }
 
 func (h *MultilineHandler) Handle(_ context.Context, r slog.Record) error {
-	fmt.Fprintf(h.Writer, "%s [%s] %s \n", r.Time.Format(time.RFC3339), r.Level, r.Message)
+	if _, err := fmt.Fprintf(h.Writer, "%s [%s] %s \n", r.Time.Format(time.RFC3339), r.Level, r.Message); err != nil {
+		return err
+	}
 
 	r.Attrs(func(a slog.Attr) bool {
 		h.printAttr(a)
@@ -33,10 +35,10 @@ func (h *MultilineHandler) Handle(_ context.Context, r slog.Record) error {
 func (h *MultilineHandler) printAttr(a slog.Attr) {
 	if a.Value.Kind() == slog.KindGroup {
 		for _, sub := range a.Value.Group() {
-			fmt.Fprintf(h.Writer, "%s%s.%s: %v%s\n", gray, a.Key, sub.Key, sub.Value, reset)
+			_, _ = fmt.Fprintf(h.Writer, "%s%s.%s: %v%s\n", gray, a.Key, sub.Key, sub.Value, reset)
 		}
 	} else {
-		fmt.Fprintf(h.Writer, "  %s%s%s: %v\n", gray, a.Key, reset, a.Value)
+		_, _ = fmt.Fprintf(h.Writer, "  %s%s%s: %v\n", gray, a.Key, reset, a.Value)
 	}
 }
 

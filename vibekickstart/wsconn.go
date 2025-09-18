@@ -5,6 +5,7 @@ import (
 	"log"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/coder/websocket"
 )
@@ -76,40 +77,81 @@ func (cm *ConnectionManager) Remove(name string, conn *websocket.Conn) {
 	}
 }
 
-// BroadcastAll sends a message to all connected clients
+// BroadcastAll sends a message to all connected clients with timeout protection
 func (cm *ConnectionManager) BroadcastAll(ctx context.Context, message []byte) {
 	cm.mutex.RLock()
-	defer cm.mutex.RUnlock()
+
+	// Create a copy of connections to release lock quickly
+	var allConns []*websocket.Conn
+	var allNames []string
 
 	for _, info := range cm.connections {
 		for _, conn := range info.Conns {
-			err := conn.Write(ctx, websocket.MessageText, message)
-			if err != nil {
-				log.Printf("Error broadcasting to client %s: %v", info.Name, err)
-				// Note: We don't remove here to avoid modifying the map during iteration
-				// Failed connections will be cleaned up when they're detected by the handler goroutine
-			}
+			allConns = append(allConns, conn)
+			allNames = append(allNames, info.Name)
 		}
 	}
+	cm.mutex.RUnlock()
+
+	// Broadcast to all connections concurrently with timeout
+	var wg sync.WaitGroup
+	for i, conn := range allConns {
+		wg.Add(1)
+		go func(conn *websocket.Conn, name string) {
+			defer wg.Done()
+
+			// Create timeout context for this write (5 second timeout)
+			writeCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+
+			err := conn.Write(writeCtx, websocket.MessageText, message)
+			if err != nil {
+				log.Printf("Error broadcasting to client %s: %v", name, err)
+				// Failed connections will be cleaned up by the handler goroutine
+			}
+		}(conn, allNames[i])
+	}
+
+	// Wait for all writes to complete or timeout
+	wg.Wait()
 }
 
 // BroadcastToName sends a message to all connections with a specific name
 func (cm *ConnectionManager) BroadcastToName(ctx context.Context, name string, message []byte) {
 	cm.mutex.RLock()
-	defer cm.mutex.RUnlock()
 
 	info, exists := cm.connections[name]
 	if !exists {
+		cm.mutex.RUnlock()
 		return // Name doesn't exist
 	}
 
-	for _, conn := range info.Conns {
-		err := conn.Write(ctx, websocket.MessageText, message)
-		if err != nil {
-			log.Printf("Error broadcasting to client %s: %v", name, err)
-			// Failed connections will be cleaned up separately
-		}
+	// Create a copy of connections to release lock quickly
+	connsCopy := make([]*websocket.Conn, len(info.Conns))
+	copy(connsCopy, info.Conns)
+	cm.mutex.RUnlock()
+
+	// Broadcast to connections concurrently with timeout
+	var wg sync.WaitGroup
+	for _, conn := range connsCopy {
+		wg.Add(1)
+		go func(conn *websocket.Conn) {
+			defer wg.Done()
+
+			// Create timeout context for this write (5 second timeout)
+			writeCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+
+			err := conn.Write(writeCtx, websocket.MessageText, message)
+			if err != nil {
+				log.Printf("Error broadcasting to client %s: %v", name, err)
+				// Failed connections will be cleaned up separately
+			}
+		}(conn)
 	}
+
+	// Wait for all writes to complete or timeout
+	wg.Wait()
 }
 
 // GetConnectionCount returns the total number of active connections

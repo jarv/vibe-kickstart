@@ -7,15 +7,15 @@ let isConnected = false;
 function initWebSocket() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${protocol}//${window.location.host}/ws`;
-  
+
   ws = new ReconnectingWebSocket(wsUrl);
-  
+
   ws.addEventListener("open", () => {
     console.log("WebSocket connected");
     isConnected = true;
     updateDisplay();
   });
-  
+
   ws.addEventListener("message", (event) => {
     const message = JSON.parse(event.data);
     if (message.type === "update") {
@@ -23,13 +23,13 @@ function initWebSocket() {
       updateDisplay();
     }
   });
-  
+
   ws.addEventListener("close", () => {
     console.log("WebSocket disconnected");
     isConnected = false;
     updateDisplay();
   });
-  
+
   ws.addEventListener("error", (error) => {
     console.error("WebSocket error:", error);
   });
@@ -56,7 +56,7 @@ function resetCounter() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initWebSocket();
-  
+
   const button = document.getElementById("counter-button");
   if (button) {
     button.addEventListener("click", resetCounter);
