@@ -2,7 +2,7 @@
 golang = "1.26.4"
 golangci-lint = "2.12.2"
 shellcheck = "0.11.0"
-nodejs = "24.17.0"
+nodejs = "24.18.0"
 shfmt = "3.13.1"
 vale = "3.15.1"
 watchexec = "latest"
