@@ -4,7 +4,7 @@ golangci-lint = "2.12.2"
 shellcheck = "0.11.0"
 nodejs = "24.19.0"
 shfmt = "3.13.1"
-vale = "3.17.0"
+vale = "3.17.1"
 watchexec = "latest"
 
 [tasks.lint]
